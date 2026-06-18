@@ -89,6 +89,113 @@
   overflow: hidden;
 }
 
+/* 可点击的图片项 */
+.clickable {
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+.clickable:hover {
+  filter: drop-shadow(0px 4px 4px #00000040) brightness(1.1);
+}
+
+/* 灯箱遮罩 */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.92);
+  user-select: none;
+  animation: lightboxFadeIn 0.3s ease;
+}
+
+@keyframes lightboxFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 关闭按钮 */
+.lightboxClose {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 48px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10001;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.lightboxClose:hover {
+  opacity: 1;
+}
+
+/* 导航箭头 */
+.lightboxNav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 64px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10001;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.lightboxNav:hover {
+  opacity: 1;
+}
+
+.lightboxPrev {
+  left: 32px;
+}
+
+.lightboxNext {
+  right: 32px;
+}
+
+/* 灯箱内容 */
+.lightboxContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.lightboxImage {
+  max-width: 90vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 8px;
+  animation: lightboxZoomIn 0.3s ease;
+}
+
+@keyframes lightboxZoomIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.lightboxTitle {
+  margin: 16px 0 0;
+  color: #ffffff;
+  font-family: "Satoshi Variable", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: clamp(16px, 2vw, 24px);
+  font-weight: 500;
+  text-align: center;
+}
+
 @media (max-width: 767px) {
   .gallery2 {
     width: 100vw;
@@ -140,5 +247,27 @@
   .arrowRight {
     width: 28px;
     height: 28px;
+  }
+
+  .lightboxClose {
+    top: 16px;
+    right: 20px;
+    font-size: 36px;
+  }
+
+  .lightboxNav {
+    font-size: 40px;
+  }
+
+  .lightboxPrev {
+    left: 12px;
+  }
+
+  .lightboxNext {
+    right: 12px;
+  }
+
+  .lightboxImage {
+    max-height: 70vh;
   }
 }

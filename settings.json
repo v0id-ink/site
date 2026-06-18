@@ -1,0 +1,13 @@
+{
+    "version": "1",
+    "gallery": [
+        {
+            "name": "Morning in Haikou",
+            "file": "gallery-main.png"
+        },
+        {
+            "name": "Haikou Port",
+            "file": "gallery-secondary.png"
+        }
+    ]
+}

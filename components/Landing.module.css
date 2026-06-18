@@ -1,0 +1,113 @@
+.landingPage {
+  position: relative;
+  padding: 0 120px 26px;
+  width: 1440px;
+  height: 1024px;
+  overflow: hidden;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(/images/landing-bg.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* 初始黑色遮罩：动画完成且图片加载后淡出 */
+.bgOverlay {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  margin: 0;
+  line-height: 159px;
+  letter-spacing: 0;
+  color: #ffffff;
+  font-family: "Cabinet Grotesk Variable", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 128px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 逐词动画的单词容器：inline-block 使 transform/filter 生效 */
+.word {
+  display: inline-block;
+  will-change: transform, filter, opacity;
+}
+
+.title2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% + 110px));
+  z-index: 2;
+  margin: 0;
+  line-height: 40px;
+  letter-spacing: 0;
+  color: #ffffff;
+  font-family: "Cabinet Grotesk Variable", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 32px;
+  text-align: center;
+}
+
+.copyrightLonely2026 {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  margin: 0;
+  line-height: 40px;
+  letter-spacing: 0;
+  color: #ffffff66;
+  font-family: "Cabinet Grotesk Variable", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 32px;
+}
+
+@media (max-width: 767px) {
+  .landingPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    min-height: 100vh;
+    height: auto;
+    padding: 120px 24px 40px;
+  }
+
+  .title {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    font-size: clamp(40px, 12vw, 72px);
+    line-height: 1.15;
+    white-space: normal;
+  }
+
+  .title2 {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin-top: 16px;
+    font-size: clamp(16px, 4.5vw, 24px);
+    line-height: 1.4;
+  }
+
+  .copyrightLonely2026 {
+    position: absolute;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}

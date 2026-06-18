@@ -12,5 +12,27 @@
         {
             "file": "DJI_20260228131558_0010_D.JPG"
         }
+    ],
+    "links": [
+        {
+            "icon": "github",
+            "name": "Starry-Sky-World",
+            "url": "https://github.com/Starry-Sky-World"
+        },
+        {
+            "icon": "mail",
+            "name": "liu_qinyu@outlook.com",
+            "url": "mailto:liu_qinyu@outlook.com"
+        },
+        {
+            "icon": "telegram",
+            "name": "t.me/lonely_14",
+            "url": "https://t.me/lonely_14"
+        },
+        {
+            "icon": "qq",
+            "name": "1280993766",
+            "url": "https://qm.qq.com/q/13I2zpaWnE"
+        }
     ]
 }

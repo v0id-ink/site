@@ -4,22 +4,22 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // 图片资源：长期缓存（1年，immutable）
+        // 图片资源：缓存 3 天
         source: '/images/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: 'public, max-age=259200',
           },
         ],
       },
       {
-        // 图标资源：长期缓存（1年，immutable）
+        // 图标资源：缓存 3 天
         source: '/icons/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: 'public, max-age=259200',
           },
         ],
       },

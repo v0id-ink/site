@@ -12,6 +12,7 @@ permissions:
 jobs:
   process-submission:
     # 仅处理带 gallery-submission 标签的 Issue
+    # opened：模板自动带标签；labeled：事后补标签也能触发
     if: contains(github.event.issue.labels.*.name, 'gallery-submission')
     runs-on: ubuntu-latest
     steps:

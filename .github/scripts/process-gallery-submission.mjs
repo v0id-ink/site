@@ -39,11 +39,17 @@ function parseEntries(sectionText) {
   return entries;
 }
 
-// 根据文件名提示或 Content-Type 推断扩展名
-function getExtension(nameHint, contentType) {
+// 根据文件名提示、URL 路径或 Content-Type 推断扩展名
+function getExtension(nameHint, url, contentType) {
   if (nameHint) {
     const ext = path.extname(nameHint).toLowerCase();
     if (ext) return ext;
+  }
+  if (url) {
+    try {
+      const ext = path.extname(new URL(url).pathname).toLowerCase();
+      if (ext) return ext;
+    } catch {}
   }
   const map = {
     'image/jpeg': '.jpg',
@@ -103,7 +109,7 @@ async function main() {
     if (!res.ok) throw new Error(`下载失败 ${entry.url}: ${res.status}`);
 
     const contentType = res.headers.get('content-type') || '';
-    const ext = getExtension(entry.title, contentType);
+    const ext = getExtension(entry.title, entry.url, contentType);
     const filename = `gallery-${ISSUE_NUMBER}-${index}${ext}`;
 
     const buffer = Buffer.from(await res.arrayBuffer());

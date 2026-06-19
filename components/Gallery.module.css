@@ -76,7 +76,7 @@
   100% { background-position: -200% 0; }
 }
 
-/* 图片：默认隐藏，加载完成后淡入；hover 时放大（容器不变） */
+/* 图片：默认隐藏，加载完成后淡入；hover 悬停 1s 后放大（容器不变） */
 .cardImg {
   position: absolute;
   inset: 0;
@@ -93,8 +93,9 @@
   opacity: 1;
 }
 
-.clickable:hover .cardImg {
+.galleryItem.hovering .cardImg {
   transform: scale(1.08);
+  transition-delay: 1s;
 }
 
 /* 有标题时的渐变遮罩 */

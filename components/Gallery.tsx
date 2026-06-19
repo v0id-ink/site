@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './Gallery.module.css';
 import settings from '@/settings.json';
 
@@ -27,6 +27,7 @@ function GalleryCard({
 
   return (
     <div
+      data-gallery-card
       className={`${styles.galleryItem} ${item.name ? styles.withName : ''} ${styles.clickable}`}
       onClick={onClick}
     >
@@ -64,9 +65,28 @@ export default function Gallery() {
   const items = settings.gallery as GalleryItem[];
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const hoverCardRef = useRef<HTMLElement | null>(null);
 
   const isOpen = lightboxIndex !== null;
   const currentItem = isOpen ? items[lightboxIndex!] : null;
+
+  // 悬停跟踪：鼠标在容器内移动时，只对当前卡片触发放大 class
+  // 经过卡片间 gap 时保持上一张卡片状态，避免 hover 频繁切换造成卡顿
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const target = (e.target as HTMLElement).closest<HTMLElement>('[data-gallery-card]');
+    if (!target) return; // 在 gap 中，保持当前状态
+    if (target === hoverCardRef.current) return; // 同一卡片，不操作
+    if (hoverCardRef.current) hoverCardRef.current.classList.remove(styles.hovering);
+    target.classList.add(styles.hovering);
+    hoverCardRef.current = target;
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    if (hoverCardRef.current) {
+      hoverCardRef.current.classList.remove(styles.hovering);
+      hoverCardRef.current = null;
+    }
+  }, []);
 
   // 横向滚动惯性：鼠标滚轮（垂直）转为横向滚动 + rAF 缓动减速
   // 触摸板横向滚动（deltaX）保留原生惯性
@@ -148,7 +168,8 @@ export default function Gallery() {
   return (
     <div className={styles.gallery2}>
       <p className={styles.gallery}>Gallery</p>
-      <div ref={scrollRef} className={styles.autoWrapper} data-slot-gallery>
+      <div ref={scrollRef} className={styles.autoWrapper} data-slot-gallery
+        onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
         {items.map((item, index) => (
           <GalleryCard
             key={index}

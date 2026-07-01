@@ -11,6 +11,11 @@ type GalleryItem = {
   file: string;
 };
 
+// file 以 https:// 开头时为外链，直接使用；否则拼接本地 /images/ 路径
+function imgSrc(file: string) {
+  return file.startsWith('https://') ? file : `/images/${file}`;
+}
+
 /**
  * 单个 Gallery 卡片
  * - 独立跟踪图片加载状态，未加载完成时显示骨架屏
@@ -39,7 +44,7 @@ function GalleryCard({
       {/* 图片：加载完成后才显示 */}
       <img
         className={`${styles.cardImg} ${loaded ? styles.cardImgLoaded : ''}`}
-        src={`/images/${item.file}`}
+        src={imgSrc(item.file)}
         alt={item.name || ''}
         loading="lazy"
         decoding="async"
@@ -251,7 +256,7 @@ export default function Gallery({ limit }: { limit?: number }) {
           <div className={styles.lightboxContent} onClick={(e) => e.stopPropagation()}>
             <img
               key={lightboxIndex}
-              src={`/images/${currentItem.file}`}
+              src={imgSrc(currentItem.file)}
               alt={currentItem.name || ''}
               className={styles.lightboxImage}
             />

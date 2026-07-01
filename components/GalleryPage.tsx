@@ -16,6 +16,11 @@ type GalleryItem = {
   file: string;
 };
 
+// file 以 https:// 开头时为外链，直接使用；否则拼接本地 /images/ 路径
+function imgSrc(file: string) {
+  return file.startsWith('https://') ? file : `/images/${file}`;
+}
+
 function GalleryCard({
   item,
   index,
@@ -40,7 +45,7 @@ function GalleryCard({
         {!loaded && <div className={styles.skeleton} />}
         <img
           className={`${styles.cardImg} ${loaded ? styles.cardImgLoaded : ''}`}
-          src={`/images/${item.file}`}
+          src={imgSrc(item.file)}
           alt={item.name || ''}
           loading="lazy"
           decoding="async"
@@ -105,7 +110,7 @@ export default function GalleryPage() {
   // 键盘事件由 Lightbox 库处理
 
   const slides = items.map((item) => ({
-    src: `/images/${item.file}`,
+    src: imgSrc(item.file),
     alt: item.name || '',
     title: item.name,
   }));

@@ -103,25 +103,37 @@ async function main() {
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i];
     const index = i + 1;
-    console.log(`(${index}/${entries.length}) 下载: ${entry.url}`);
-
-    const res = await fetch(entry.url);
-    if (!res.ok) throw new Error(`下载失败 ${entry.url}: ${res.status}`);
-
-    const contentType = res.headers.get('content-type') || '';
-    const ext = getExtension(entry.title, entry.url, contentType);
-    const filename = `gallery-${ISSUE_NUMBER}-${index}${ext}`;
-
-    const buffer = Buffer.from(await res.arrayBuffer());
-    await writeFile(path.join(IMAGES_DIR, filename), buffer);
-
     const item = {};
     if (entry.title) item.name = entry.title;
-    item.file = filename;
-    settings.gallery.push(item);
 
-    addedItems.push({ name: entry.title, file: filename });
-    console.log(`  -> 保存为 ${filename}${entry.title ? `（标题：${entry.title}）` : ''}`);
+    // githubusercontent 链接下载到本地；其余直接作为外链记录
+    let isGithubHosted = false;
+    try {
+      isGithubHosted = new URL(entry.url).hostname.includes('githubusercontent');
+    } catch {}
+
+    if (isGithubHosted) {
+      console.log(`(${index}/${entries.length}) 下载: ${entry.url}`);
+      const res = await fetch(entry.url);
+      if (!res.ok) throw new Error(`下载失败 ${entry.url}: ${res.status}`);
+
+      const contentType = res.headers.get('content-type') || '';
+      const ext = getExtension(entry.title, entry.url, contentType);
+      const filename = `gallery-${ISSUE_NUMBER}-${index}${ext}`;
+
+      const buffer = Buffer.from(await res.arrayBuffer());
+      await writeFile(path.join(IMAGES_DIR, filename), buffer);
+
+      item.file = filename;
+      addedItems.push({ name: entry.title, file: filename });
+      console.log(`  -> 保存为 ${filename}${entry.title ? `（标题：${entry.title}）` : ''}`);
+    } else {
+      console.log(`(${index}/${entries.length}) 外链: ${entry.url}`);
+      item.file = entry.url;
+      addedItems.push({ name: entry.title, file: entry.url });
+      console.log(`  -> 外链 ${entry.url}${entry.title ? `（标题：${entry.title}）` : ''}`);
+    }
+    settings.gallery.push(item);
   }
 
   // 写回 settings.json（保持 4 空格缩进 + 末尾换行）

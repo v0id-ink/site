@@ -138,15 +138,18 @@ export default function Friends() {
 
     const handleTouchMove = (e: TouchEvent) => {
       if (!dragging) return;
-      e.preventDefault();
-      e.stopPropagation();
 
       dragOffset = e.touches[0].clientY - startY;
 
-      // 前卡片跟随手指向下
-      const frontCard = cardRefs.current[order[0]];
-      if (frontCard) {
-        gsap.set(frontCard, { y: Math.max(0, dragOffset) });
+      // 仅在明显拖拽时阻止默认行为，轻触仍允许 click 跳转
+      if (Math.abs(dragOffset) > 5) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const frontCard = cardRefs.current[order[0]];
+        if (frontCard) {
+          gsap.set(frontCard, { y: Math.max(0, dragOffset) });
+        }
       }
     };
 

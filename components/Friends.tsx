@@ -22,33 +22,36 @@ function getPeek(): number {
   return Math.max(55, Math.min(120, w * 0.08));
 }
 
-function isMobile(): boolean {
-  if (typeof window === 'undefined') return false;
-  return window.innerWidth < 768;
-}
-
 export default function Friends() {
   const friends = (settings.friends || []) as FriendItem[];
   const total = friends.length + 1;
 
-  // order[0] = 最前层，order[last] = 最底层（友链之间）
   const [order, setOrder] = useState<number[]>(friends.map((_, i) => i));
+  const [mobile, setMobile] = useState(false);
   const cardRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const stackRef = useRef<HTMLDivElement>(null);
   const hoverTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
   const initialized = useRef(false);
 
-  // 初始定位（useLayoutEffect 防止闪烁）
+  // 检测移动端
+  useEffect(() => {
+    const check = () => setMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // 初始定位
   useLayoutEffect(() => {
     const peek = getPeek();
-    const mobile = isMobile();
+    const m = window.innerWidth < 768;
 
     order.forEach((friendIndex, position) => {
       const card = cardRefs.current[friendIndex];
       if (!card) return;
       gsap.set(card, {
-        [mobile ? 'y' : 'x']: peek * position,
-        [mobile ? 'x' : 'y']: 0,
+        [m ? 'y' : 'x']: peek * position,
+        [m ? 'x' : 'y']: 0,
         zIndex: 10 + friends.length - position,
       });
     });
@@ -61,15 +64,15 @@ export default function Friends() {
     if (!initialized.current) return;
 
     const peek = getPeek();
-    const mobile = isMobile();
+    const m = window.innerWidth < 768;
 
     order.forEach((friendIndex, position) => {
       const card = cardRefs.current[friendIndex];
       if (!card) return;
 
       gsap.to(card, {
-        [mobile ? 'y' : 'x']: peek * position,
-        [mobile ? 'x' : 'y']: 0,
+        [m ? 'y' : 'x']: peek * position,
+        [m ? 'x' : 'y']: 0,
         zIndex: 10 + friends.length - position,
         duration: 0.5,
         ease: 'power3.out',
@@ -77,17 +80,17 @@ export default function Friends() {
     });
   }, [order, friends.length]);
 
-  // 窗口缩放时重新定位（peek 值和轴向可能变化）
+  // 窗口缩放时重新定位
   useEffect(() => {
     const handleResize = () => {
       const peek = getPeek();
-      const mobile = isMobile();
+      const m = window.innerWidth < 768;
       order.forEach((friendIndex, position) => {
         const card = cardRefs.current[friendIndex];
         if (!card) return;
         gsap.set(card, {
-          [mobile ? 'y' : 'x']: peek * position,
-          [mobile ? 'x' : 'y']: 0,
+          [m ? 'y' : 'x']: peek * position,
+          [m ? 'x' : 'y']: 0,
           zIndex: 10 + friends.length - position,
         });
       });
@@ -96,6 +99,7 @@ export default function Friends() {
     return () => window.removeEventListener('resize', handleResize);
   }, [order, friends.length]);
 
+  // 桌面端：hover > 1s 置顶
   const handleMouseEnter = useCallback((friendIndex: number) => {
     hoverTimers.current[friendIndex] = setTimeout(() => {
       setOrder(prev => {
@@ -113,6 +117,71 @@ export default function Friends() {
     }
   }, []);
 
+  // 移动端：拖拽前卡片向下滑出 → 下一张置顶
+  useEffect(() => {
+    const stack = stackRef.current;
+    if (!stack || !mobile) return;
+
+    let startY = 0;
+    let dragging = false;
+    let dragOffset = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-friend-card]')) return;
+
+      startY = e.touches[0].clientY;
+      dragging = true;
+      dragOffset = 0;
+      e.stopPropagation();
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!dragging) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      dragOffset = e.touches[0].clientY - startY;
+
+      // 前卡片跟随手指向下
+      const frontCard = cardRefs.current[order[0]];
+      if (frontCard) {
+        gsap.set(frontCard, { y: Math.max(0, dragOffset) });
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      e.stopPropagation();
+
+      const threshold = 40;
+
+      if (dragOffset > threshold && friends.length > 1) {
+        // 前卡片置底，下一张置顶
+        setOrder(prev => [...prev.slice(1), prev[0]]);
+      } else {
+        // 未达阈值 → 弹回
+        const frontCard = cardRefs.current[order[0]];
+        if (frontCard) {
+          gsap.to(frontCard, { y: 0, duration: 0.3, ease: 'power3.out' });
+        }
+      }
+
+      dragOffset = 0;
+    };
+
+    stack.addEventListener('touchstart', handleTouchStart, { passive: true });
+    stack.addEventListener('touchmove', handleTouchMove, { passive: false });
+    stack.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      stack.removeEventListener('touchstart', handleTouchStart);
+      stack.removeEventListener('touchmove', handleTouchMove);
+      stack.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [mobile, order, friends.length]);
+
   // 清理计时器
   useEffect(() => {
     return () => {
@@ -129,7 +198,7 @@ export default function Friends() {
           className={styles.stack}
           style={{ '--total': total } as React.CSSProperties}
         >
-          {/* Apply 卡片：始终在最底层，不参与翻牌 */}
+          {/* Apply 卡片：始终在最底层 */}
           <a
             href={APPLY_URL}
             target="_blank"
@@ -143,7 +212,7 @@ export default function Friends() {
             </div>
           </a>
 
-          {/* 友链卡片：hover > 1s 置顶 */}
+          {/* 友链卡片 */}
           {friends.map((friend, friendIndex) => (
             <a
               key={friendIndex}
@@ -152,6 +221,7 @@ export default function Friends() {
               target="_blank"
               rel="noopener noreferrer"
               className={styles.card}
+              data-friend-card
               onMouseEnter={() => handleMouseEnter(friendIndex)}
               onMouseLeave={() => handleMouseLeave(friendIndex)}
               style={{

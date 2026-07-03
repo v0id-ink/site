@@ -34,6 +34,13 @@ export default function RootLayout({
           href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,700,800,900&f[]=boska@400,700,900&f[]=satoshi@400,500,700,900&display=swap"
           rel="stylesheet"
         />
+        {/* Google Fonts: Friends 版块字体 */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:wght@400;500&family=Inclusive+Sans&family=Winky+Rough:wght@600&family=Baloo+Da+2:wght@500&family=Outfit:wght@300&display=swap"
+          rel="stylesheet"
+        />
         {/* PWA */}
         <meta name="theme-color" content="#101010" />
         <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />

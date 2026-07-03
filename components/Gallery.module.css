@@ -247,12 +247,32 @@
   max-height: 80vh;
   object-fit: contain;
   border-radius: 8px;
-  animation: lightboxZoomIn 0.3s ease;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-@keyframes lightboxZoomIn {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+.lightboxImageLoaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.lightboxSpinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  z-index: 10000;
+}
+
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .lightboxTitle {

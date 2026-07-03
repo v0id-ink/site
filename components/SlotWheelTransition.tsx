@@ -188,27 +188,8 @@ export default function SlotWheelTransition({ children }: SlotWheelTransitionPro
       // Landing 未就绪时禁止切换（防止黑屏）
       if (!landingReadyRef.current) return;
 
-      // 检查当前 section 内是否有 Gallery 横向滚动区域
-      // Gallery 横向滚动优先，不受 wheel lock 限制
-      const currentSection = sectionsRef.current[currentIndex.current];
-      const galleryEl = currentSection?.querySelector(
-        '[data-slot-gallery]',
-      ) as HTMLDivElement | null;
-
-      if (galleryEl) {
-        const canScrollRight =
-          galleryEl.scrollLeft < galleryEl.scrollWidth - galleryEl.clientWidth - 1;
-        const canScrollLeft = galleryEl.scrollLeft > 1;
-
-        if (e.deltaY > 0 && canScrollRight) {
-          galleryEl.scrollLeft += e.deltaY;
-          return;
-        }
-        if (e.deltaY < 0 && canScrollLeft) {
-          galleryEl.scrollLeft += e.deltaY;
-          return;
-        }
-      }
+      // Gallery 自行处理横向滚动并 stopPropagation，
+      // 到达此处的事件来自非 Gallery 区域或 Gallery 已到边缘 → 切换 section
 
       // wheel lock 期间忽略（吸收触控板惯性）
       if (Date.now() < wheelLockRef.current) return;
@@ -241,6 +222,23 @@ export default function SlotWheelTransition({ children }: SlotWheelTransitionPro
       touchStartTime.current = Date.now();
     };
 
+    const handleTouchMove = (e: TouchEvent) => {
+      if (document.querySelector('[data-slot-lightbox]')) return;
+      if (!landingReadyRef.current) return;
+      if (isAnimating.current) return;
+
+      const currentY = e.touches[0].clientY;
+      const currentX = e.touches[0].clientX;
+      const deltaY = touchStartY.current - currentY;
+      const deltaX = touchStartX.current - currentX;
+
+      // 纵向滑动占主导时阻止默认行为，防止浏览器在 Gallery 横向滚动区域上
+      // 触发 touchcancel（导致 touchend 永远不触发，无法切换 section）
+      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 10) {
+        e.preventDefault();
+      }
+    };
+
     const handleTouchEnd = (e: TouchEvent) => {
       if (document.querySelector('[data-slot-lightbox]')) return;
       if (isAnimating.current) return;
@@ -254,7 +252,7 @@ export default function SlotWheelTransition({ children }: SlotWheelTransitionPro
       const elapsed = Date.now() - touchStartTime.current;
 
       // 只处理纵向滑动（deltaY 须占主导且足够长）
-      if (Math.abs(deltaY) < 50 || Math.abs(deltaY) < Math.abs(deltaX) * 1.5) return;
+      if (Math.abs(deltaY) < 50 || Math.abs(deltaY) < Math.abs(deltaX)) return;
       if (elapsed > 800) return;
 
       if (deltaY > 0) {
@@ -265,9 +263,11 @@ export default function SlotWheelTransition({ children }: SlotWheelTransitionPro
     };
 
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
     container.addEventListener('touchend', handleTouchEnd, { passive: true });
     return () => {
       container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
     };
   }, []);
@@ -316,8 +316,8 @@ export default function SlotWheelTransition({ children }: SlotWheelTransitionPro
     };
   }, []);
 
-  // activeIndex 仅用于潜在的外部读取，不参与渲染逻辑
-  void activeIndex;
+  // activeIndex 用于控制 skipWhenOffscreen：仅对距当前 section 超过 1 个
+  // 位置的 section 跳过渲染，确保相邻 section（如 Gallery）的图片能预加载
 
   return (
     <div ref={containerRef} className={styles.container}>
@@ -327,7 +327,7 @@ export default function SlotWheelTransition({ children }: SlotWheelTransitionPro
           ref={(el) => {
             sectionsRef.current[index] = el;
           }}
-          className={`${styles.section} ${index !== 0 ? 'skipWhenOffscreen' : ''}`}
+          className={`${styles.section} ${Math.abs(index - activeIndex) > 1 ? 'skipWhenOffscreen' : ''}`}
         >
           {block}
         </div>

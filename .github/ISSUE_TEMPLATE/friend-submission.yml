@@ -1,0 +1,41 @@
+name: "\U0001F517 友链申请"
+description: 申请添加友链
+title: "[Friend] "
+labels: ["friend-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢申请友链！请填写以下信息，提交后会被添加到站点 Friends 版块。
+
+  - type: input
+    id: name
+    attributes:
+      label: 站点名称
+      description: 你的博客/站点名称，将显示在卡片上。
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: 站点链接
+      description: 完整 URL（https://...）。
+    validations:
+      required: true
+
+  - type: input
+    id: desc
+    attributes:
+      label: 描述（可选）
+      description: 一句话描述你的站点。
+    validations:
+      required: false
+
+  - type: textarea
+    id: image
+    attributes:
+      label: 站点截图 / 头像
+      description: 上传一张图片作为卡片背景（建议 16:9 或横向图片）。
+    validations:
+      required: true

@@ -5,16 +5,7 @@ import Link from 'next/link';
 import gsap from 'gsap';
 import styles from './Gallery.module.css';
 import settings from '@/settings.json';
-
-type GalleryItem = {
-  name?: string;
-  file: string;
-};
-
-// file 以 https:// 开头时为外链，直接使用；否则拼接本地 /images/ 路径
-function imgSrc(file: string) {
-  return file.startsWith('https://') ? file : `/images/${file}`;
-}
+import { type GalleryItem, imgSrc, thumbSrc, fullSrc } from '@/lib/gallery';
 
 /**
  * 单个 Gallery 卡片
@@ -44,11 +35,11 @@ function GalleryCard({
       {/* 图片：加载完成后才显示 */}
       <img
         className={`${styles.cardImg} ${loaded ? styles.cardImgLoaded : ''}`}
-        src={imgSrc(item.file)}
+        src={thumbSrc(item.file)}
         alt={item.name || ''}
-        loading="lazy"
         decoding="async"
         onLoad={() => setLoaded(true)}
+        onError={(e) => { e.currentTarget.src = imgSrc(item.file); }}
       />
 
       {/* 有标题时的渐变遮罩 + 标题 */}
@@ -72,6 +63,7 @@ export default function Gallery({ limit }: { limit?: number }) {
   const allItems = settings.gallery as GalleryItem[];
   const items = limit ? allItems.slice(0, limit) : allItems;
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [fullLoaded, setFullLoaded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const hoverCardRef = useRef<HTMLElement | null>(null);
   const galleryLinkRef = useRef<HTMLAnchorElement>(null);
@@ -123,16 +115,33 @@ export default function Gallery({ limit }: { limit?: number }) {
     };
 
     const onWheel = (e: WheelEvent) => {
-      // 触摸板横向滚动走原生（已有惯性）
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      e.preventDefault();
-      // 从当前位置开始累积目标
-      if (!rafId) {
-        current = el.scrollLeft;
-        target = el.scrollLeft;
+      // 触摸板横向滚动：走原生惯性，阻止冒泡以免拨码轮 preventDefault
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        e.stopPropagation();
+        return;
       }
-      target += e.deltaY;
+
+      // rAF 未运行时，将 target 同步到实际滚动位置（可能被触摸滚动改变）
+      if (!rafId) {
+        target = el.scrollLeft;
+        current = el.scrollLeft;
+      }
+
       const max = el.scrollWidth - el.clientWidth;
+      // 用 target 判断边缘：rAF 缓动时 el.scrollLeft 滞后于 target，
+      // 若用 el.scrollLeft 会导致已到边缘仍持续拦截，无法切换到下一 section
+      const canScrollRight = target < max - 1;
+      const canScrollLeft = target > 1;
+
+      // 画廊已到边缘：不拦截，让拨码轮处理 section 切换
+      if (e.deltaY > 0 && !canScrollRight) return;
+      if (e.deltaY < 0 && !canScrollLeft) return;
+
+      // 画廊可滚动：拦截 + 平滑滚动，阻止冒泡避免拨码轮双重处理
+      e.preventDefault();
+      e.stopPropagation();
+
+      target += e.deltaY;
       target = Math.max(0, Math.min(max, target));
       if (!rafId) {
         rafId = requestAnimationFrame(animate);
@@ -196,6 +205,10 @@ export default function Gallery({ limit }: { limit?: number }) {
   const goToPrev = () => setLightboxIndex((prev) => (prev === null ? null : (prev - 1 + items.length) % items.length));
   const goToNext = () => setLightboxIndex((prev) => (prev === null ? null : (prev + 1) % items.length));
 
+  useEffect(() => {
+    setFullLoaded(false);
+  }, [lightboxIndex]);
+
   return (
     <div className={styles.gallery2}>
       <p className={styles.gallery}>Gallery</p>
@@ -218,7 +231,7 @@ export default function Gallery({ limit }: { limit?: number }) {
               Go to gallery
               <span className={styles.linkUnderline} />
             </span>
-            <img src="/icons/arrow-right.svg" className={styles.arrowRight} alt="" loading="lazy" />
+            <img src="/icons/arrow-right.svg" className={styles.arrowRight} alt="" />
           </Link>
         </div>
       )}
@@ -226,6 +239,7 @@ export default function Gallery({ limit }: { limit?: number }) {
       {/* 灯箱 */}
       {isOpen && currentItem && (
         <div className={styles.lightbox} data-slot-lightbox onClick={() => setLightboxIndex(null)}>
+          {!fullLoaded && <div className={styles.lightboxSpinner} />}
           <button
             className={styles.lightboxClose}
             onClick={(e) => { e.stopPropagation(); setLightboxIndex(null); }}
@@ -256,11 +270,13 @@ export default function Gallery({ limit }: { limit?: number }) {
           <div className={styles.lightboxContent} onClick={(e) => e.stopPropagation()}>
             <img
               key={lightboxIndex}
-              src={imgSrc(currentItem.file)}
+              src={fullSrc(currentItem.file)}
               alt={currentItem.name || ''}
-              className={styles.lightboxImage}
+              className={`${styles.lightboxImage} ${fullLoaded ? styles.lightboxImageLoaded : ''}`}
+              onLoad={() => setFullLoaded(true)}
+              onError={(e) => { e.currentTarget.src = imgSrc(currentItem.file); }}
             />
-            {currentItem.name && <p className={styles.lightboxTitle}>{currentItem.name}</p>}
+            {currentItem.name && fullLoaded && <p className={styles.lightboxTitle}>{currentItem.name}</p>}
           </div>
         </div>
       )}

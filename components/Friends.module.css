@@ -1,0 +1,183 @@
+.friends {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #101010;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.title {
+  margin: 7vh 0 0;
+  line-height: 1.2;
+  color: #ffffff;
+  font-family: 'Intel One Mono', 'Courier New', monospace;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 500;
+}
+
+.stackWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.stack {
+  --card-w: clamp(240px, 38vw, 560px);
+  --card-h: clamp(170px, 27vw, 400px);
+  --peek: clamp(55px, 8vw, 120px);
+
+  position: relative;
+  width: var(--card-w);
+  height: var(--card-h);
+  flex-shrink: 0;
+  /* 居中整个堆叠：向左偏移总溢出的一半 */
+  transform: translateX(calc(-1 * var(--peek) * (var(--total) - 1) / 2));
+}
+
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  color: #fff;
+  /* 桌面端：水平堆叠 */
+  transform: translateX(calc(var(--peek) * var(--offset, 0)));
+  transition: box-shadow 0.3s ease, filter 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.45);
+  filter: brightness(1.1);
+}
+
+/* ---- 友链卡片 ---- */
+.cardImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.8);
+  transition: background 0.3s ease;
+}
+
+.card:hover .cardOverlay {
+  background: rgba(10, 10, 10, 0.6);
+}
+
+.cardContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: clamp(16px, 2.5vw, 30px);
+  z-index: 1;
+}
+
+.cardName {
+  margin: 0;
+  font-family: 'Inclusive Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-weight: 500;
+  font-size: clamp(20px, 3vw, 42px);
+  line-height: 1.1;
+  color: #fff;
+  word-break: break-word;
+}
+
+.cardDesc {
+  margin: 0;
+  font-family: 'Winky Rough', 'PingFang SC', 'Microsoft YaHei', cursive;
+  font-weight: 600;
+  font-size: clamp(12px, 1.8vw, 26px);
+  line-height: 1.2;
+  color: #fff;
+}
+
+/* ---- Apply 卡片 ---- */
+.applyCard {
+  background: #222;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.applyCard:hover {
+  background: #2c2c2c;
+  filter: none;
+}
+
+.applyContent {
+  position: absolute;
+  top: 50%;
+  right: clamp(10px, 1.5vw, 20px);
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.plus {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: clamp(32px, 4vw, 56px);
+  line-height: 1;
+  color: #fff;
+}
+
+.applyText {
+  font-family: 'Baloo Da 2', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-weight: 500;
+  font-size: clamp(14px, 1.8vw, 24px);
+  line-height: 1;
+  color: #fff;
+}
+
+/* ---- 移动端：竖向堆叠 ---- */
+@media (max-width: 767px) {
+  .friends {
+    justify-content: flex-start;
+    padding: 50px 0 0;
+  }
+
+  .title {
+    margin: 0 0 0;
+    font-size: clamp(24px, 7vw, 32px);
+  }
+
+  .stack {
+    --card-w: 82vw;
+    --card-h: 26vh;
+    --peek: 48px;
+    /* 竖向居中：向上偏移总溢出的一半 */
+    transform: translateY(calc(-1 * var(--peek) * (var(--total) - 1) / 2));
+  }
+
+  .card {
+    transform: translateY(calc(var(--peek) * var(--offset, 0)));
+  }
+
+  /* Apply 内容：横向排列，底部居中 */
+  .applyContent {
+    top: auto;
+    right: auto;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    gap: 6px;
+  }
+}

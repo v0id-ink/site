@@ -23,6 +23,14 @@
             "file": "https://huggingface.co/buckets/StarrySkyWorld/Cuz-Backup/resolve/shijidaqiao_260702_0648.JPG"
         }
     ],
+    "friends": [
+        {
+            "name": "Lanying's Blog",
+            "desc": "????",
+            "image": "/images/friend-lanying.jpg",
+            "url": "https://blog.yufurry.cn"
+        }
+    ],
     "links": [
         {
             "icon": "github",

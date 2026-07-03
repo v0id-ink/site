@@ -8,18 +8,9 @@ import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import styles from './GalleryPage.module.css';
 import settings from '@/settings.json';
+import { type GalleryItem, imgSrc, thumbSrc, fullSrc } from '@/lib/gallery';
 
 gsap.registerPlugin(ScrollTrigger);
-
-type GalleryItem = {
-  name?: string;
-  file: string;
-};
-
-// file 以 https:// 开头时为外链，直接使用；否则拼接本地 /images/ 路径
-function imgSrc(file: string) {
-  return file.startsWith('https://') ? file : `/images/${file}`;
-}
 
 function GalleryCard({
   item,
@@ -45,11 +36,12 @@ function GalleryCard({
         {!loaded && <div className={styles.skeleton} />}
         <img
           className={`${styles.cardImg} ${loaded ? styles.cardImgLoaded : ''}`}
-          src={imgSrc(item.file)}
+          src={thumbSrc(item.file)}
           alt={item.name || ''}
           loading="lazy"
           decoding="async"
           onLoad={() => setLoaded(true)}
+          onError={(e) => { e.currentTarget.src = imgSrc(item.file); }}
         />
         <div className={styles.cardOverlay} />
         {item.name && <p className={styles.cardName}>{item.name}</p>}
@@ -110,7 +102,7 @@ export default function GalleryPage() {
   // 键盘事件由 Lightbox 库处理
 
   const slides = items.map((item) => ({
-    src: imgSrc(item.file),
+    src: fullSrc(item.file),
     alt: item.name || '',
     title: item.name,
   }));

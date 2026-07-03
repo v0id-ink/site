@@ -22,6 +22,14 @@ function GalleryCard({
   onClick: () => void;
 }) {
   const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  // SSR hydration 竞态修复：图片可能在 React 挂载 onLoad 之前就已加载完成
+  useEffect(() => {
+    if (imgRef.current?.complete && imgRef.current?.naturalWidth > 0) {
+      setLoaded(true);
+    }
+  }, []);
 
   return (
     <div
@@ -34,6 +42,7 @@ function GalleryCard({
 
       {/* 图片：加载完成后才显示 */}
       <img
+        ref={imgRef}
         className={`${styles.cardImg} ${loaded ? styles.cardImgLoaded : ''}`}
         src={thumbSrc(item.file)}
         alt={item.name || ''}

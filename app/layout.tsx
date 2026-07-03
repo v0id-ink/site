@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "700", "900"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const alimama = localFont({
+  src: "../fonts/AlimamaFangYunTi.ttf",
+  variable: "--font-alimama",
   display: "swap",
 });
 
@@ -27,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN" className={inter.variable}>
+    <html lang="zh-CN" className={`${inter.variable} ${alimama.variable}`}>
       <head>
         {/* Fontshare: Cabinet Grotesk / Boska / Satoshi 变量字体 */}
         <link

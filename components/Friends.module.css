@@ -91,7 +91,7 @@
 
 .cardName {
   margin: 0;
-  font-family: 'Inclusive Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: var(--font-alimama), 'Inclusive Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   font-weight: 500;
   font-size: clamp(20px, 3vw, 42px);
   line-height: 1.1;
@@ -100,8 +100,8 @@
 }
 
 .cardDesc {
-  margin: 0;
-  font-family: 'Winky Rough', 'PingFang SC', 'Microsoft YaHei', cursive;
+  margin: 8px 0 0;
+  font-family: var(--font-alimama), 'Winky Rough', 'PingFang SC', 'Microsoft YaHei', cursive;
   font-weight: 600;
   font-size: clamp(12px, 1.8vw, 26px);
   line-height: 1.2;

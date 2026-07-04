@@ -41,6 +41,12 @@
             "desc": "好看的皮囊千篇一律，有趣的灵魂万里挑一",
             "image": "/images/friend-fshrimp.jpg",
             "url": "https://fshrimp.top"
+        },
+        {
+            "name": "apanzinc",
+            "desc": "我是 apanzinc，一名初三学生，专注于前后端开发与人工智能应用的学习与实践。",
+            "image": "/images/friend-apanzinc.jpg",
+            "url": "https://apanzinc.top"
         }
     ],
     "links": [

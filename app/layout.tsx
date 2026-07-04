@@ -45,7 +45,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:wght@400;500&family=Inclusive+Sans&family=Winky+Rough:wght@600&family=Baloo+Da+2:wght@500&family=Outfit:wght@300&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:wght@400;500&family=Inclusive+Sans&family=Winky+Rough:wght@600&family=Baloo+Da+2:wght@500&family=Outfit:wght@300;400&display=swap"
           rel="stylesheet"
         />
         {/* PWA */}

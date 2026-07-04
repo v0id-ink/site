@@ -1,0 +1,141 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  animation: overlayIn 0.2s ease-out;
+}
+
+.scaleWrapper {
+  width: 740px;
+  height: 325px;
+  flex-shrink: 0;
+}
+
+.dialog {
+  position: relative;
+  background: #101010;
+  width: 740px;
+  height: 325px;
+  animation: dialogIn 0.25s ease-out;
+}
+
+.closeBtn {
+  position: absolute;
+  left: 678px;
+  top: 42px;
+  width: 22.5px;
+  height: 22.5px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #D4D4D4;
+  transition: color 0.2s ease;
+}
+
+.closeBtn:hover {
+  color: #fff;
+}
+
+.title {
+  position: absolute;
+  left: 31px;
+  top: 26px;
+  margin: 0;
+  font-family: 'Satoshi Variable', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.35;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.subtitle {
+  position: absolute;
+  left: 32px;
+  top: 80px;
+  margin: 0;
+  font-family: 'Satoshi Variable', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.33;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.buttons {
+  position: absolute;
+  left: 22px;
+  top: 227px;
+  display: flex;
+  gap: 37px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  text-decoration: none;
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.btnGithub {
+  width: 381px;
+  height: 62px;
+}
+
+.btnMail {
+  width: 248px;
+  height: 62px;
+}
+
+.btnMain {
+  font-size: 32px;
+  line-height: 1.25;
+}
+
+.btnSub {
+  font-size: 24px;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.32);
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dialogIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 780px) {
+  .scaleWrapper {
+    width: calc(100vw - 40px);
+    height: calc((100vw - 40px) * 325 / 740);
+  }
+
+  .dialog {
+    transform: scale(calc((100vw - 40px) / 740));
+    transform-origin: top left;
+  }
+}

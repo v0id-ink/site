@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react
 import gsap from 'gsap';
 import styles from './Friends.module.css';
 import settings from '@/settings.json';
+import ApplyDialog from './ApplyDialog';
 
 type FriendItem = {
   name: string;
@@ -28,6 +29,7 @@ export default function Friends() {
 
   const [order, setOrder] = useState<number[]>(friends.map((_, i) => i));
   const [mobile, setMobile] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const cardRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const stackRef = useRef<HTMLDivElement>(null);
   const hoverTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
@@ -208,6 +210,10 @@ export default function Friends() {
             rel="noopener noreferrer"
             className={`${styles.card} ${styles.applyCard}`}
             style={{ zIndex: 1, '--offset': friends.length } as React.CSSProperties}
+            onClick={(e) => {
+              e.preventDefault();
+              setDialogOpen(true);
+            }}
           >
             <div className={styles.applyContent}>
               <span className={styles.plus}>+</span>
@@ -248,6 +254,7 @@ export default function Friends() {
           ))}
         </div>
       </div>
+      <ApplyDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
     </div>
   );
 }

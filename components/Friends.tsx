@@ -231,6 +231,12 @@ export default function Friends() {
               rel="noopener noreferrer"
               className={`${styles.card} ${order[0] === friendIndex ? styles.isFront : ''}`}
               data-friend-card
+              onClick={(e) => {
+                if (order[0] !== friendIndex) {
+                  e.preventDefault();
+                  setOrder(prev => [friendIndex, ...prev.filter(i => i !== friendIndex)]);
+                }
+              }}
               onMouseEnter={() => handleMouseEnter(friendIndex)}
               onMouseLeave={() => handleMouseLeave(friendIndex)}
               style={{

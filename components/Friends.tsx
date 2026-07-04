@@ -229,7 +229,7 @@ export default function Friends() {
               href={friend.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={styles.card}
+              className={`${styles.card} ${order[0] === friendIndex ? styles.isFront : ''}`}
               data-friend-card
               onMouseEnter={() => handleMouseEnter(friendIndex)}
               onMouseLeave={() => handleMouseLeave(friendIndex)}
